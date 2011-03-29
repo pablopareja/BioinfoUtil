@@ -108,15 +108,15 @@ public class PalindromicityAnalyzer {
                 }
             }
 
-            result.append(counter + DEFAULT_SEPARATOR);
+            result.append((counter + DEFAULT_SEPARATOR));
 
             if(withMaxWordLength){
-                resultMax.append(maxWordLength + DEFAULT_SEPARATOR);
+                resultMax.append((maxWordLength + DEFAULT_SEPARATOR));
             }
 
             if(withPatterns){
                 int patternCode = BitOperations.convertToEquivalentInt(patternArray);
-                patterns.append(patternCode + DEFAULT_SEPARATOR);
+                patterns.append((patternCode + DEFAULT_SEPARATOR));
             }
         }
 
@@ -217,10 +217,10 @@ public class PalindromicityAnalyzer {
                 }
             }
 
-            result.append(maxWordLength + DEFAULT_SEPARATOR);
+            result.append((maxWordLength + DEFAULT_SEPARATOR));
             if(withPatterns){
                 int patternCode = BitOperations.convertToEquivalentInt(patternArray);
-                patterns.append(patternCode + DEFAULT_SEPARATOR);
+                patterns.append((patternCode + DEFAULT_SEPARATOR));
             }
         }       
 
@@ -320,10 +320,10 @@ public class PalindromicityAnalyzer {
 
             }
 
-            result.append(maxWordLength + DEFAULT_SEPARATOR);
+            result.append((maxWordLength + DEFAULT_SEPARATOR));
             if(withPatterns){                
                 int patternCode = BitOperations.convertToEquivalentInt(patternArray);
-                patterns.append(patternCode + DEFAULT_SEPARATOR);
+                patterns.append((patternCode + DEFAULT_SEPARATOR));
             }
 
 
@@ -440,15 +440,15 @@ public class PalindromicityAnalyzer {
                 }
             }
 
-            result.append(counter + DEFAULT_SEPARATOR);
+            result.append((counter + DEFAULT_SEPARATOR));
 
             if(withMaxWordLength){
-                resultMax.append(maxWordLength + DEFAULT_SEPARATOR);
+                resultMax.append((maxWordLength + DEFAULT_SEPARATOR));
             }
 
             if(withPatterns){
                 int patternCode = BitOperations.convertToEquivalentInt(patternArray);
-                patterns.append(patternCode + DEFAULT_SEPARATOR);
+                patterns.append((patternCode + DEFAULT_SEPARATOR));
             }
         }
 

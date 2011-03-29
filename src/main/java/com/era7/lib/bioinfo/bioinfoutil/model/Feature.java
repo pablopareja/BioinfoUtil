@@ -2,29 +2,31 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.era7.lib.bioinfo.bioinfoutil.model;
 
 /**
- *
- * @author ppareja
+ * 
+ * @author Pablo Pareja Tobes <ppareja@era7.com>
  */
-public class Feature implements Comparable<Feature>{
-    
+public class Feature implements Comparable<Feature> {
+
     public static final String INTERGENIC_FEATURE_TYPE = "int";
     public static final String RNA_FEATURE_TYPE = "rna";
     public static final String ORF_FEATURE_TYPE = "orf";
     public static final String ALL_FEATURE_TYPE = "all";
-
     public static final char POSITIVE_STRAND = '+';
     public static final char NEGATIVE_STRAND = '-';
-
     protected int begin;
     protected int end;
     protected int length;
     protected String id;
     protected double eValue;
     protected String organism;
+    protected char strand;
+    protected String name;
+    protected String genomeElementId;
+    protected String sequence;
+    protected String type;
 
     public String getOrganism() {
         return organism;
@@ -49,14 +51,9 @@ public class Feature implements Comparable<Feature>{
     public void setId(String id) {
         this.id = id;
     }
-    protected char strand;
-    protected String name;
-    protected String genomeElementId;
-    protected String sequence;
-    protected String type;
 
     public Feature() {
-    }    
+    }
 
     public Feature(int begin, int end) {
         this.begin = begin;
@@ -70,8 +67,6 @@ public class Feature implements Comparable<Feature>{
     public void setType(String type) {
         this.type = type;
     }
-
-   
 
     public int getBegin() {
         return begin;
@@ -131,31 +126,28 @@ public class Feature implements Comparable<Feature>{
 
     @Override
     public int compareTo(Feature f) {
-        if(getBegin() == f.getBegin()){
-            if(getEnd() == f.getEnd()){
-                if(geteValue() < f.geteValue()){
+        if (getBegin() == f.getBegin()) {
+            if (getEnd() == f.getEnd()) {
+                if (geteValue() < f.geteValue()) {
                     return -1;
-                }else if(geteValue() > f.geteValue()){
+                } else if (geteValue() > f.geteValue()) {
                     return 1;
-                }else{
-                    if(f.getId().equals(getId())){
+                } else {
+                    if (f.getId().equals(getId())) {
                         return 0;
-                    }else{
+                    } else {
                         return -1;
                     }
                 }
-            }else if(getEnd() < f.getEnd()){
+            } else if (getEnd() < f.getEnd()) {
                 return 1;
-            }else{
+            } else {
                 return -1;
             }
-        }else if(getBegin() < f.getBegin()){
+        } else if (getBegin() < f.getBegin()) {
             return -1;
-        }else{
+        } else {
             return 1;
         }
     }
-
-
-
 }

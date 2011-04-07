@@ -10,7 +10,9 @@ import com.era7.lib.bioinfoxml.ProteinXML;
 import com.era7.lib.bioinfoxml.ContigXML;
 import com.era7.lib.bioinfoxml.Hit;
 import com.era7.lib.bioinfoxml.Hsp;
+import com.era7.lib.era7xmlapi.model.XMLElement;
 import com.era7.lib.era7xmlapi.model.XMLElementException;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -19,6 +21,47 @@ import java.util.HashMap;
  * @author Pablo Pareja Tobes <ppareja@era7.com>
  */
 public class BlastExporter {
+
+
+    public static String exportBlastXMLtoIsotigsCoverage(BufferedReader blastOutput) throws Exception {
+
+
+        StringBuilder stBuilder = new StringBuilder();
+        stBuilder.append("<proteins>\n");
+
+        String line = null;
+        StringBuilder iterationStBuilder = new StringBuilder();
+
+        HashMap<String, ArrayList<ContigXML>> proteinContigs = new HashMap<String, ArrayList<ContigXML>>();
+        //Protein info map
+        HashMap<String, ProteinXML> proteinInfoMap = new HashMap<String, ProteinXML>();
+
+        while ((line = blastOutput.readLine()) != null) {
+            if (line.trim().startsWith("<" + Iteration.TAG_NAME + ">")) {
+
+                while (!line.trim().startsWith("</" + Iteration.TAG_NAME + ">")) {
+                    iterationStBuilder.append(line);
+                    line = blastOutput.readLine();
+                }
+                iterationStBuilder.append(line);
+                XMLElement entryXMLElem = new XMLElement(iterationStBuilder.toString());
+                iterationStBuilder.delete(0, iterationStBuilder.length());
+                Iteration iteration = new Iteration(entryXMLElem.asJDomElement());
+                parseIteration(iteration, proteinContigs, proteinInfoMap);
+            }
+        }
+
+        blastOutput.close();
+
+        parseAndExportProteins(proteinContigs, proteinInfoMap, stBuilder);
+
+        stBuilder.append("</proteins>\n");
+
+        return stBuilder.toString();
+
+
+
+    }
 
     public static String exportBlastXMLtoIsotigsCoverage(BlastOutput blastOutput) throws XMLElementException {
 
@@ -33,68 +76,20 @@ public class BlastExporter {
         HashMap<String, ProteinXML> proteinInfoMap = new HashMap<String, ProteinXML>();
 
         for (Iteration iteration : iterations) {
-            String contigNameSt = iteration.getUniprotIdFromQueryDef();
-            ContigXML contig = new ContigXML();
-            contig.setId(contigNameSt);
-
-            ArrayList<Hit> hits = iteration.getIterationHits();
-            for (Hit hit : hits) {
-                String proteinIdSt = hit.getHitDef().split("\\|")[1];
-
-                ArrayList<ContigXML> contigsArray = proteinContigs.get(proteinIdSt);
-
-
-                if (contigsArray == null) {
-                    //Creating contigs array
-                    contigsArray = new ArrayList<ContigXML>();
-                    proteinContigs.put(proteinIdSt, contigsArray);
-                    //Creating protein info
-                    ProteinXML proteinXML = new ProteinXML();
-                    proteinXML.setId(proteinIdSt);
-                    proteinXML.setLength(hit.getHitLen());
-                    proteinInfoMap.put(proteinIdSt, proteinXML);
-                }
-
-                ArrayList<Hsp> hsps = hit.getHitHsps();
-                int hspMinHitFrom = 1000000000;
-                int hspMaxHitTo = -1;
-
-                //---Figuring out the isotig/contig positions
-                for (Hsp hsp : hsps) {
-                    int hspFrom = hsp.getHitFrom();
-                    int hspTo = hsp.getHitTo();
-//                            System.out.println("hsp = " + hsp);
-//                            System.out.println("hsp.getHitFrame() = " + hsp.getHitFrame());
-//                            if (hsp.getQueryFrame() < 0) {
-//                                hspFrom = hsp.getHitTo();
-//                                hspTo = hsp.getHitFrom();
-//                            }
-
-                    if (hspFrom < hspMinHitFrom) {
-                        hspMinHitFrom = hspFrom;
-                    }
-                    if (hspTo > hspMaxHitTo) {
-                        hspMaxHitTo = hspTo;
-                    }
-
-                    //adding hsps to contig
-                    hsp.detach();
-                    contig.addHsp(hsp);
-                }
-                //-------------------
-
-                contig.setBegin(hspMinHitFrom);
-                contig.setEnd(hspMaxHitTo);
-                if (contig.getBegin() > contig.getEnd()) {
-                    contig.setBegin(hspMaxHitTo);
-                    contig.setEnd(hspMinHitFrom);
-                }
-
-                contigsArray.add(contig);
-
-
-            }
+            parseIteration(iteration, proteinContigs, proteinInfoMap);
         }
+
+        parseAndExportProteins(proteinContigs, proteinInfoMap, stBuilder);
+        
+        stBuilder.append("</proteins>\n");
+
+
+        return stBuilder.toString();
+    }
+
+    private static void parseAndExportProteins(HashMap<String, ArrayList<ContigXML>> proteinContigs,
+                                            HashMap<String, ProteinXML> proteinInfoMap,
+                                            StringBuilder stBuilder){
 
         for (String proteinKey : proteinInfoMap.keySet()) {
             //---calculating coverage and creating output xml----
@@ -125,9 +120,72 @@ public class BlastExporter {
 
         }
 
-        stBuilder.append("</proteins>\n");
+    }
+
+    private static void parseIteration(Iteration iteration,
+            HashMap<String, ArrayList<ContigXML>> proteinContigs,
+            HashMap<String, ProteinXML> proteinInfoMap) throws XMLElementException {
+
+        String contigNameSt = iteration.getUniprotIdFromQueryDef();
+        ContigXML contig = new ContigXML();
+        contig.setId(contigNameSt);
+
+        ArrayList<Hit> hits = iteration.getIterationHits();
+        for (Hit hit : hits) {
+            String proteinIdSt = hit.getHitDef().split("\\|")[1];
+
+            ArrayList<ContigXML> contigsArray = proteinContigs.get(proteinIdSt);
 
 
-        return stBuilder.toString();
+            if (contigsArray == null) {
+                //Creating contigs array
+                contigsArray = new ArrayList<ContigXML>();
+                proteinContigs.put(proteinIdSt, contigsArray);
+                //Creating protein info
+                ProteinXML proteinXML = new ProteinXML();
+                proteinXML.setId(proteinIdSt);
+                proteinXML.setLength(hit.getHitLen());
+                proteinInfoMap.put(proteinIdSt, proteinXML);
+            }
+
+            ArrayList<Hsp> hsps = hit.getHitHsps();
+            int hspMinHitFrom = 1000000000;
+            int hspMaxHitTo = -1;
+
+            //---Figuring out the isotig/contig positions
+            for (Hsp hsp : hsps) {
+                int hspFrom = hsp.getHitFrom();
+                int hspTo = hsp.getHitTo();
+//                            System.out.println("hsp = " + hsp);
+//                            System.out.println("hsp.getHitFrame() = " + hsp.getHitFrame());
+//                            if (hsp.getQueryFrame() < 0) {
+//                                hspFrom = hsp.getHitTo();
+//                                hspTo = hsp.getHitFrom();
+//                            }
+
+                if (hspFrom < hspMinHitFrom) {
+                    hspMinHitFrom = hspFrom;
+                }
+                if (hspTo > hspMaxHitTo) {
+                    hspMaxHitTo = hspTo;
+                }
+
+                //adding hsps to contig
+                hsp.detach();
+                contig.addHsp(hsp);
+            }
+            //-------------------
+
+            contig.setBegin(hspMinHitFrom);
+            contig.setEnd(hspMaxHitTo);
+            if (contig.getBegin() > contig.getEnd()) {
+                contig.setBegin(hspMaxHitTo);
+                contig.setEnd(hspMinHitFrom);
+            }
+
+            contigsArray.add(contig);
+
+        }
+
     }
 }

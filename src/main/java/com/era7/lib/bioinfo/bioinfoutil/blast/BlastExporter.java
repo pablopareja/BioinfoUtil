@@ -13,6 +13,9 @@ import com.era7.lib.bioinfoxml.Hsp;
 import com.era7.lib.era7xmlapi.model.XMLElement;
 import com.era7.lib.era7xmlapi.model.XMLElementException;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -22,6 +25,13 @@ import java.util.HashMap;
  */
 public class BlastExporter {
 
+    public static final int TRUNCATE_STRING_LENGTH = 30;
+
+    public static void main(String[] args) throws FileNotFoundException, Exception {
+
+        BlastExporter.exportBlastXMLtoIsotigsCoverage(new BufferedReader(new FileReader(new File("PPIN_Coverage.xml"))));
+
+    }
 
     public static String exportBlastXMLtoIsotigsCoverage(BufferedReader blastOutput) throws Exception {
 
@@ -36,19 +46,29 @@ public class BlastExporter {
         //Protein info map
         HashMap<String, ProteinXML> proteinInfoMap = new HashMap<String, ProteinXML>();
 
-        while ((line = blastOutput.readLine()) != null) {
-            if (line.trim().startsWith("<" + Iteration.TAG_NAME + ">")) {
+        do {
+            line = blastOutput.readLine();
+        } while (!line.trim().startsWith("<" + Iteration.TAG_NAME + ">"));
 
-                while (!line.trim().startsWith("</" + Iteration.TAG_NAME + ">")) {
-                    iterationStBuilder.append(line);
-                    line = blastOutput.readLine();
-                }
+        while (line != null) {
+
+            iterationStBuilder.append(line);
+            line = blastOutput.readLine();
+            while (line != null && !line.trim().startsWith("<" + Iteration.TAG_NAME + ">")
+                    && !line.trim().startsWith("</BlastOutput_iterations>")) {
                 iterationStBuilder.append(line);
+                line = blastOutput.readLine();
+            }
+
+            if (!line.trim().startsWith("</BlastOutput_iterations>")) {
+
                 XMLElement entryXMLElem = new XMLElement(iterationStBuilder.toString());
+
                 iterationStBuilder.delete(0, iterationStBuilder.length());
                 Iteration iteration = new Iteration(entryXMLElem.asJDomElement());
                 parseIteration(iteration, proteinContigs, proteinInfoMap);
             }
+
         }
 
         blastOutput.close();
@@ -80,7 +100,7 @@ public class BlastExporter {
         }
 
         parseAndExportProteins(proteinContigs, proteinInfoMap, stBuilder);
-        
+
         stBuilder.append("</proteins>\n");
 
 
@@ -88,8 +108,10 @@ public class BlastExporter {
     }
 
     private static void parseAndExportProteins(HashMap<String, ArrayList<ContigXML>> proteinContigs,
-                                            HashMap<String, ProteinXML> proteinInfoMap,
-                                            StringBuilder stBuilder){
+            HashMap<String, ProteinXML> proteinInfoMap,
+            StringBuilder stBuilder) {
+
+        System.out.println("holaaa");
 
         for (String proteinKey : proteinInfoMap.keySet()) {
             //---calculating coverage and creating output xml----
@@ -126,7 +148,13 @@ public class BlastExporter {
             HashMap<String, ArrayList<ContigXML>> proteinContigs,
             HashMap<String, ProteinXML> proteinInfoMap) throws XMLElementException {
 
-        String contigNameSt = iteration.getUniprotIdFromQueryDef();
+        //String contigNameSt = iteration.getUniprotIdFromQueryDef();
+        String contigNameSt = iteration.getQueryDef();
+
+        //---In the case where query def is too long it is truncated
+        if(contigNameSt.length() > TRUNCATE_STRING_LENGTH){
+            contigNameSt = contigNameSt.substring(0, TRUNCATE_STRING_LENGTH);
+        }
         ContigXML contig = new ContigXML();
         contig.setId(contigNameSt);
 

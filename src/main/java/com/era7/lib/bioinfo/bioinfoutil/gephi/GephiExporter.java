@@ -30,7 +30,7 @@ import org.jdom.Element;
 public class GephiExporter {
 
     public static double DEFAULT_GO_SIZE = 5.0;
-    public static double DEFAULT_PROTEIN_SIZE = 20.0;
+    public static double DEFAULT_PROTEIN_SIZE = 15.0;
 
     public static String exportGoAnnotationToGexf(GoAnnotationXML goAnnotationXML,
             VizColorXML proteinColor,

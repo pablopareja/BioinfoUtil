@@ -31,6 +31,12 @@ public class GBCommon {
     public static final String CDS_STR = "CDS";
     public static final String GENE_STR = "gene";
     public static final String RNA_STR = "rna";
+    public static final String MISC_RNA_STR = "miscRNA";
+    public static final String M_RNA_STR = "mRNA";
+    public static final String NC_RNA_STR = "ncRNA";
+    public static final String R_RNA_STR = "rRNA";
+    public static final String TM_RNA_STR = "tmRNA";
+    public static final String T_RNA_STR = "tRNA";
     public static final String BASE_PAIRS_STR = "bp";
     public static final String CONTIGS_SIZE_STR = "rc";
     public static final String ORIGIN_STR = "ORIGIN";

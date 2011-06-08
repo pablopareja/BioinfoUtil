@@ -31,11 +31,18 @@ public class GephiExporter {
 
     public static double DEFAULT_GO_SIZE = 5.0;
     public static double DEFAULT_PROTEIN_SIZE = 15.0;
+    public static final String ALL_SUB_ONTOLOGIES = "all";
+    public static final String MOLECULAR_FUNCTION_SUB_ONTOLOGY = GoTermXML.ASPECT_FUNCTION;
+    public static final String BIOLOGICAL_PROCESS_SUB_ONTOLOGY = GoTermXML.ASPECT_PROCESS;
+    public static final String CELLULAR_COMPONENT_SUB_ONTOLOGY = GoTermXML.ASPECT_COMPONENT;
+    
 
     public static String exportGoAnnotationToGexf(GoAnnotationXML goAnnotationXML,
             VizColorXML proteinColor,
             VizColorXML goColor,
-            Boolean proportionalSize) throws XMLElementException {
+            Boolean proportionalSize,
+            Boolean proteinsWithoutConnectionsIncluded,
+            String subOntologyIncluded) throws XMLElementException {
 
 
         StringBuilder stBuilder = new StringBuilder();
@@ -71,30 +78,46 @@ public class GephiExporter {
 
         //-----go terms-------------
         for (GoTermXML goTerm : goTerms) {
-            NodeXML nodeXML = new NodeXML();
-            nodeXML.setId(goTerm.getId());
-            nodeXML.setLabel(goTerm.getGoName());
-            nodeXML.setColor(new VizColorXML((Element) goColor.asJDomElement().clone()));
-            //nodeXML.setSize(new VizSizeXML((Element) goSize.asJDomElement().clone()));
 
-            //---------size---------------------
-            if (proportionalSize) {
-                nodeXML.setSize(new VizSizeXML(goTerm.getAnnotationsCount() * 5.0));
-            } else {
-                nodeXML.setSize(new VizSizeXML(DEFAULT_GO_SIZE));
+            boolean includeTerm = false;
+            String termAspect = goTerm.getAspect();
+
+            if (subOntologyIncluded.equals(GephiExporter.ALL_SUB_ONTOLOGIES)
+                    || termAspect.equals(subOntologyIncluded)) {
+                includeTerm = true;
             }
 
-            //---------position--------------------
-            nodeXML.setPosition(new VizPositionXML(0, 0, 0));
+            if (includeTerm) {
 
-            AttValuesXML attValuesXML = new AttValuesXML();
-            AttValueXML nameAttValue = new AttValueXML();
-            nameAttValue.setFor(1);
-            nameAttValue.setValue(goTerm.getGoName());
-            attValuesXML.addAttValue(nameAttValue);
-            nodeXML.setAttvalues(attValuesXML);
+                NodeXML nodeXML = new NodeXML();
+                nodeXML.setId(goTerm.getId());
+                nodeXML.setLabel(goTerm.getGoName());
+                nodeXML.setColor(new VizColorXML((Element) goColor.asJDomElement().clone()));
+                //nodeXML.setSize(new VizSizeXML((Element) goSize.asJDomElement().clone()));
 
-            nodesXMLStBuilder.append((nodeXML.toString() + "\n"));
+                //---------size---------------------
+                if (proportionalSize) {
+                    nodeXML.setSize(new VizSizeXML(goTerm.getAnnotationsCount() * 5.0));
+                } else {
+                    nodeXML.setSize(new VizSizeXML(DEFAULT_GO_SIZE));
+                }
+
+                //---------position--------------------
+                nodeXML.setPosition(new VizPositionXML(0, 0, 0));
+
+                AttValuesXML attValuesXML = new AttValuesXML();
+                AttValueXML nameAttValue = new AttValueXML();
+                nameAttValue.setFor(1);
+                nameAttValue.setValue(goTerm.getGoName());
+                attValuesXML.addAttValue(nameAttValue);
+                nodeXML.setAttvalues(attValuesXML);
+
+                nodesXMLStBuilder.append((nodeXML.toString() + "\n"));
+
+            }
+
+
+
         }
 
         //-----------proteins-------------
@@ -116,22 +139,38 @@ public class GephiExporter {
             attValuesXML.addAttValue(nameAttValue);
             nodeXML.setAttvalues(attValuesXML);
 
-            nodesXMLStBuilder.append((nodeXML.toString() + "\n"));
 
             //----edges----
             List<GoTermXML> proteinTerms = new ArrayList<GoTermXML>();
             List<GoTermXML> bioTerms = proteinXML.getBiologicalProcessGoTerms();
             List<GoTermXML> cellTerms = proteinXML.getCellularComponentGoTerms();
             List<GoTermXML> molTerms = proteinXML.getMolecularFunctionGoTerms();
-            if (bioTerms != null) {
-                proteinTerms.addAll(bioTerms);
+
+            if (subOntologyIncluded.equals(GephiExporter.ALL_SUB_ONTOLOGIES)) {
+                if (bioTerms != null) {
+                    proteinTerms.addAll(bioTerms);
+                }
+                if (cellTerms != null) {
+                    proteinTerms.addAll(cellTerms);
+                }
+                if (molTerms != null) {
+                    proteinTerms.addAll(molTerms);
+                }
+            } else if (subOntologyIncluded.equals(GephiExporter.MOLECULAR_FUNCTION_SUB_ONTOLOGY)) {
+                if (molTerms != null) {
+                    proteinTerms.addAll(molTerms);
+                }
+            } else if (subOntologyIncluded.equals(GephiExporter.BIOLOGICAL_PROCESS_SUB_ONTOLOGY)) {
+                if (bioTerms != null) {
+                    proteinTerms.addAll(bioTerms);
+                }
+            } else if (subOntologyIncluded.equals(GephiExporter.CELLULAR_COMPONENT_SUB_ONTOLOGY)) {
+                if (cellTerms != null) {
+                    proteinTerms.addAll(cellTerms);
+                }
             }
-            if (cellTerms != null) {
-                proteinTerms.addAll(cellTerms);
-            }
-            if (molTerms != null) {
-                proteinTerms.addAll(molTerms);
-            }
+
+
 
             for (GoTermXML goTermXML : proteinTerms) {
                 EdgeXML edge = new EdgeXML();
@@ -141,6 +180,10 @@ public class GephiExporter {
                 edge.setType(EdgeXML.DIRECTED_TYPE);
 
                 edgesXMLStBuilder.append((edge.toString() + "\n"));
+            }
+
+            if (proteinsWithoutConnectionsIncluded || proteinTerms.size() > 0) {
+                nodesXMLStBuilder.append((nodeXML.toString() + "\n"));
             }
 
         }
@@ -154,4 +197,6 @@ public class GephiExporter {
 
         return stBuilder.toString();
     }
+
+    
 }

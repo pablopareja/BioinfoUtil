@@ -4,7 +4,7 @@
  */
 package com.era7.lib.bioinfo.bioinfoutil.gephi;
 
-import com.era7.lib.bioinfoxml.ProteinXML;
+import com.era7.lib.bioinfoxml.uniprot.ProteinXML;
 import com.era7.lib.bioinfoxml.gexf.AttValueXML;
 import com.era7.lib.bioinfoxml.gexf.AttValuesXML;
 import com.era7.lib.bioinfoxml.gexf.AttributeXML;

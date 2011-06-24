@@ -6,7 +6,7 @@ package com.era7.lib.bioinfo.bioinfoutil.blast;
 
 import com.era7.lib.bioinfoxml.BlastOutput;
 import com.era7.lib.bioinfoxml.Iteration;
-import com.era7.lib.bioinfoxml.ProteinXML;
+import com.era7.lib.bioinfoxml.uniprot.ProteinXML;
 import com.era7.lib.bioinfoxml.ContigXML;
 import com.era7.lib.bioinfoxml.Hit;
 import com.era7.lib.bioinfoxml.Hsp;

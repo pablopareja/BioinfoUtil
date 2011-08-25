@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class TaxonomyLoader {
     
 
-    HashMap<Integer, NCBITaxonomyNodeXML> nodesMap = new HashMap<Integer, NCBITaxonomyNodeXML>();
+    private HashMap<Integer, NCBITaxonomyNodeXML> nodesMap = new HashMap<Integer, NCBITaxonomyNodeXML>();
 
     public TaxonomyLoader(File nodesDumpFile, File namesDumpFile) throws FileNotFoundException, IOException {
 
@@ -38,12 +38,12 @@ public class TaxonomyLoader {
 
                 String[] columns = line.split("\\|");
                 
-                node.setTaxId(columns[0].trim());
+                node.setTaxId(Integer.parseInt(columns[0].trim()));
                 node.setParentTaxId(columns[1].trim());
                 node.setRank(columns[2].trim());
                 node.setEmblCode(columns[3].trim());
                 
-                nodesMap.put(Integer.parseInt(node.getTaxId()), node);
+                nodesMap.put(node.getTaxId(), node);
                 nodesCounter++;
                 
                 if(nodesCounter % 10000 == 0){
@@ -77,5 +77,9 @@ public class TaxonomyLoader {
         System.out.println("done!");
 
 
+    }
+    
+    public HashMap<Integer, NCBITaxonomyNodeXML> getNodesMap(){
+        return nodesMap;
     }
 }

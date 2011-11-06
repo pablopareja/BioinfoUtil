@@ -34,7 +34,7 @@ public class SeqUtil {
                     valueToAppend = 'T';
                 }else if(currentChar == 'T'){
                     valueToAppend = 'A';
-                }if(currentChar == 'C'){
+                }else if(currentChar == 'C'){
                     valueToAppend = 'G';
                 }else if(currentChar == 'G'){
                     valueToAppend = 'C';
@@ -48,7 +48,7 @@ public class SeqUtil {
                     valueToAppend = 't';
                 }else if(currentChar == 't'){
                     valueToAppend = 'a';
-                }if(currentChar == 'c'){
+                }else if(currentChar == 'c'){
                     valueToAppend = 'g';
                 }else if(currentChar == 'g'){
                     valueToAppend = 'c';

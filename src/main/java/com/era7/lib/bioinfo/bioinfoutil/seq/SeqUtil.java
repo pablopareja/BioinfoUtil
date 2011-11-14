@@ -83,7 +83,11 @@ public class SeqUtil {
         StringBuilder result = new StringBuilder();
         
         for (int i = 0; i <= sequence.length() - 3 ; i+=3) {
-            result.append(translationMap.get(sequence.substring(i, i+3)));
+            String tempSt = translationMap.get(sequence.substring(i, i+3).toUpperCase());
+            if(tempSt == null){
+                tempSt = "X";
+            }
+            result.append(tempSt);
         }
         
         return result.toString();

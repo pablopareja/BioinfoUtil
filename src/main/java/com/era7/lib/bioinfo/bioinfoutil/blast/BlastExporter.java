@@ -12,12 +12,15 @@ import com.era7.lib.bioinfoxml.Hit;
 import com.era7.lib.bioinfoxml.Hsp;
 import com.era7.lib.era7xmlapi.model.XMLElement;
 import com.era7.lib.era7xmlapi.model.XMLElementException;
+import com.era7.lib.era7xmlapi.util.XMLUtil;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 
 /**
  *
@@ -31,6 +34,10 @@ public class BlastExporter {
 
         BlastExporter.exportBlastXMLtoIsotigsCoverage(new BufferedReader(new FileReader(new File("PPIN_Coverage.xml"))));
 
+    }
+    
+    public static String prettyPrintBlast(String blastSt, int indentAmount) throws TransformerConfigurationException, TransformerException{
+        return XMLUtil.prettyPrintXML(blastSt, indentAmount);
     }
 
     public static String exportBlastXMLtoIsotigsCoverage(BufferedReader blastOutput) throws Exception {

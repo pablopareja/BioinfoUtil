@@ -6,7 +6,6 @@ package com.era7.lib.bioinfo.bioinfoutil.uniprot;
 
 import com.era7.lib.bioinfoxml.PredictedGene;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.apache.commons.httpclient.HttpClient;
@@ -20,7 +19,7 @@ public class UniprotProteinRetreiver {
 
     public static String URL_UNIPROT = "http://www.uniprot.org/uniprot/";
 
-    public static PredictedGene getUniprotDataFor(PredictedGene gene, boolean withSequence) throws IOException {
+    public static PredictedGene getUniprotDataFor(PredictedGene gene, boolean withSequence) throws Exception {
 
 
         String columnsParameter = "protein names,organism,comment(FUNCTION),ec,interpro,go,pathway,families,keywords,length,subcellular locations,citation,genes,go-id,domains,length";
@@ -37,7 +36,7 @@ public class UniprotProteinRetreiver {
         String response = null;
         HttpClient client = new HttpClient();
         do {
-            System.out.println("Realizando la peticion post...");
+            System.out.println("Performing POST request...");
             int status = client.executeMethod(post);
             InputStream inStream = post.getResponseBodyAsStream();
 
@@ -47,7 +46,7 @@ public class UniprotProteinRetreiver {
             reader.readLine();
             response = reader.readLine();
             if (response == null) {
-                System.out.println("No se ha obtenido respuesta, reintentando....");
+                System.out.println("There was no response, trying again....");
             }else{
                 String tempLine = null;
                 while((tempLine = reader.readLine()) != null){
@@ -77,7 +76,7 @@ public class UniprotProteinRetreiver {
 
             currentValue = columns[i];
 
-            System.out.println("i = " + i + " currentValue = " +  currentValue);
+            //System.out.println("i = " + i + " currentValue = " +  currentValue);
             switch (i) {
                 case 0:
                     gene.setProteinNames(currentValue);

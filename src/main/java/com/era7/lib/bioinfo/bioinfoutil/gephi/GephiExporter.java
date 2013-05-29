@@ -35,7 +35,6 @@ public class GephiExporter {
     public static final String MOLECULAR_FUNCTION_SUB_ONTOLOGY = GoTermXML.ASPECT_FUNCTION;
     public static final String BIOLOGICAL_PROCESS_SUB_ONTOLOGY = GoTermXML.ASPECT_PROCESS;
     public static final String CELLULAR_COMPONENT_SUB_ONTOLOGY = GoTermXML.ASPECT_COMPONENT;
-    
 
     public static String exportGoAnnotationToGexf(GoAnnotationXML goAnnotationXML,
             VizColorXML proteinColor,
@@ -67,6 +66,11 @@ public class GephiExporter {
         nameAttributeXML.setTitle("Name");
         nameAttributeXML.setType("string");
         attributesXML.addAttribute(nameAttributeXML);
+        AttributeXML nodeTypeAttributeXML = new AttributeXML();
+        nodeTypeAttributeXML.setId("2");
+        nodeTypeAttributeXML.setTitle("Node type");
+        nodeTypeAttributeXML.setType("string");
+        attributesXML.addAttribute(nodeTypeAttributeXML);
 
         stBuilder.append((attributesXML.toString() + "\n"));
 
@@ -110,7 +114,12 @@ public class GephiExporter {
                 nameAttValue.setFor(1);
                 nameAttValue.setValue(goTerm.getGoName());
                 attValuesXML.addAttValue(nameAttValue);
+                AttValueXML nodeTypeAttValue = new AttValueXML();
+                nodeTypeAttValue.setFor(2);
+                nodeTypeAttValue.setValue("GOTerm");
+                attValuesXML.addAttValue(nodeTypeAttValue);
                 nodeXML.setAttvalues(attValuesXML);
+
 
                 nodesXMLStBuilder.append((nodeXML.toString() + "\n"));
 
@@ -137,6 +146,10 @@ public class GephiExporter {
             nameAttValue.setFor(1);
             nameAttValue.setValue(proteinXML.getId());
             attValuesXML.addAttValue(nameAttValue);
+            AttValueXML nodeTypeAttValue = new AttValueXML();
+            nodeTypeAttValue.setFor(2);
+            nodeTypeAttValue.setValue("Protein");
+            attValuesXML.addAttValue(nodeTypeAttValue);
             nodeXML.setAttvalues(attValuesXML);
 
 
@@ -197,6 +210,4 @@ public class GephiExporter {
 
         return stBuilder.toString();
     }
-
-    
 }

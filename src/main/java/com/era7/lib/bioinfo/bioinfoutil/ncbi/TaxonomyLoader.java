@@ -5,11 +5,7 @@
 package com.era7.lib.bioinfo.bioinfoutil.ncbi;
 
 import com.era7.lib.bioinfoxml.ncbi.NCBITaxonomyNodeXML;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 
 /**

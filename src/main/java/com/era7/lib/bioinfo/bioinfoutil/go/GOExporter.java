@@ -55,13 +55,13 @@ public class GOExporter {
 
         //Writing headers
         molFuncBuff.write("Uniprot template protein" + SEPARATOR + "GO ID" + SEPARATOR + "Molecular function GO term" + "\n");
-        molFuncFreqBuff.write("GO ID" + SEPARATOR + "Molecular function GO term" + SEPARATOR + "Frequency" + SEPARATOR + "Proteins" + "\n");
+        molFuncFreqBuff.write("GO ID" + SEPARATOR + "Molecular function GO term" + SEPARATOR + "Number of proteins" + SEPARATOR + "Proteins" + "\n");
 
         cellCompBuff.write("Uniprot template protein" + SEPARATOR + "GO ID" + SEPARATOR + "Cellular component GO term" + "\n");
-        cellCompFreqBuff.write("GO ID" + SEPARATOR + "Cellular component GO term" + SEPARATOR + "Frequency" + SEPARATOR + "Proteins" + "\n");
+        cellCompFreqBuff.write("GO ID" + SEPARATOR + "Cellular component GO term" + SEPARATOR + "Number of proteins" + SEPARATOR + "Proteins" + "\n");
 
         bioProcBuff.write("Uniprot template protein" + SEPARATOR + "GO ID" + SEPARATOR + "Biological process GO term" + "\n");
-        bioProcFreqBuff.write("GO ID" + SEPARATOR + "Biological process GO term" + SEPARATOR + "Frequency" + SEPARATOR + "Proteins" + "\n");
+        bioProcFreqBuff.write("GO ID" + SEPARATOR + "Biological process GO term" + SEPARATOR + "Number of proteins" + SEPARATOR + "Proteins" + "\n");
 
         //Now it's time to group the terms by their aspect/sub-ontology
         List<GoTermXML> goAnnotators = goAnnotationXML.getAnnotatorGoTerms();
